@@ -226,6 +226,10 @@ details.allpicks[open] summary::before{transform:rotate(90deg);}
 .pl-row .n{flex:1;font-weight:700;}
 .you-tag{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
   background:rgba(212,255,63,.14);color:var(--accent);padding:3px 7px;border-radius:5px;}
+.remove-pl-btn{width:28px;height:28px;border-radius:7px;background:rgba(255,107,129,.1);
+  color:var(--coral);font-size:15px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,107,129,.25);cursor:pointer;flex:none;transition:.12s;font-family:inherit;}
+.remove-pl-btn:active{background:rgba(255,107,129,.25);}
 
 /* results tab */
 .note{font-size:12px;color:var(--faint);background:var(--surface);border:1px solid var(--line);
@@ -328,6 +332,7 @@ const firebaseConfig = {
   appId: "1:235835839868:web:e7dceedcdc3038581340f9",
   measurementId: "G-YJTPC4DCQ6"
 };
+
 /* init Firebase */
 let fbAuth, fbDb;
 try {
@@ -835,15 +840,29 @@ function viewPlayers(){
    const isMe=p.uid===uid;
    const isOrg=state.organiser&&p.uid===state.organiser;
    const stats=playerStats(p.uid);
+   const canRemove=isOrganiser&&!isMe&&!isOrg;
    return'<div class="pl-row"><div class="pl-av">'+esc(p.name.charAt(0).toUpperCase())+'</div>'
     +'<div class="n">'+esc(p.name)+(isOrg?' <span style="font-size:10px;color:var(--accent-dim);font-weight:700;">ORG</span>':'')+'</div>'
     +(isMe?'<span class="you-tag">You</span>':'')
-    +'<span style="font-size:12px;color:var(--muted);font-weight:700;">'+stats.pts+' pts</span></div>';
+    +'<span style="font-size:12px;color:var(--muted);font-weight:700;margin-left:auto;">'+stats.pts+' pts</span>'
+    +(canRemove?'<button class="remove-pl-btn" data-uid="'+p.uid+'" data-name="'+esc(p.name)+'" title="Remove player">✕</button>':'')
+    +'</div>';
  }).join("");
  h+='<div style="font-size:12px;color:var(--faint);margin-top:20px;line-height:1.6;">'
    +'Each player owns their own picks, enforced by the database. '
    +'To reset a PIN or transfer the organiser role, use the Firebase console.</div>';
  document.getElementById("app").innerHTML=h;
+}
+
+async function removePlayer(uid,name){
+ if(!currentUser||state.organiser!==currentUser.uid)return;
+ if(!confirm('Remove '+name+' from the pool?\n\nThis deletes their player record and all their picks.\n\nNote: you also need to delete their login from Firebase console \u2192 Authentication \u2192 Users, otherwise they can re-register with the same name.'))return;
+ try{
+   await fbDb.ref('players/'+uid).remove();
+   await fbDb.ref('predictions/'+uid).remove();
+ }catch(e){
+   alert('Could not remove player. Check your Firebase connection and rules.');
+ }
 }
 
 async function claimOrganiser(){
@@ -918,6 +937,8 @@ document.getElementById("authScreen").addEventListener("keydown",e=>{
 document.getElementById("app").addEventListener("click",e=>{
  if(e.target.id==="signOutBtn"){fbAuth.signOut();return;}
  if(e.target.id==="claimOrgBtn"){claimOrganiser();return;}
+ const rmBtn=e.target.closest(".remove-pl-btn");
+ if(rmBtn){removePlayer(rmBtn.dataset.uid,rmBtn.dataset.name);return;}
  const sb=e.target.closest(".step-btn");
  if(sb){const st=sb.closest(".stepper");
    adjust(st.dataset.mid,st.dataset.side,st.dataset.mode,sb.classList.contains("plus")?1:-1);return;}

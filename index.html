@@ -323,14 +323,13 @@ nav{position:fixed;left:0;right:0;bottom:0;z-index:40;
    Firebase console > Project settings > Your apps > SDK setup and configuration
    ===================================================================== */
 const firebaseConfig = {
-  apiKey: "AIzaSyC412po4CdPPW_bnDdpvzLNGmyVmpi5WlA",
-  authDomain: "wc26-tipping.firebaseapp.com",
-  databaseURL: "https://wc26-tipping-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "wc26-tipping",
-  storageBucket: "wc26-tipping.firebasestorage.app",
-  messagingSenderId: "235835839868",
-  appId: "1:235835839868:web:e7dceedcdc3038581340f9",
-  measurementId: "G-YJTPC4DCQ6"
+  apiKey: "REPLACE_WITH_YOUR_API_KEY",
+  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+  databaseURL: "REPLACE_WITH_YOUR_DATABASE_URL",
+  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
+  appId: "REPLACE_WITH_YOUR_APP_ID"
 };
 
 /* init Firebase */
@@ -677,7 +676,7 @@ function refreshStepper(mid,side,mode){
 /* ------ match card ------ */
 function statusOf(m){if(resultOf(m.id))return"ft";if(isLocked(m))return"locked";return"open";}
 function matchCard(m,mode,idx,isNext){
- const st=statusOf(m);const locked=st!=="open";const res=resultOf(m.id);
+ const st=statusOf(m);const locked=isLocked(m);const res=resultOf(m.id);
  const delay=Math.min(idx*22,300);
  let h='<div class="card'+(isNext?" next":"")+'" data-mid="'+m.id+'" data-locked="'+(locked?1:0)+'" style="animation-delay:'+delay+'ms">';
  const smode=mode==="results"?"res":"pred";

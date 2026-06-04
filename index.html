@@ -13,13 +13,13 @@
     --surface: #13131a;
     --surface2: #1c1c27;
     --surface3: #242433;
-    --border: #2a2a3d;
+    --border: #36364d;
     --accent: #00e5ff;
     --accent2: #ff3d71;
     --accent3: #ffd600;
-    --text: #e8e8f0;
-    --text2: #8888aa;
-    --text3: #555570;
+    --text: #f0f0f5;
+    --text2: #a8a8c4;
+    --text3: #7a7a98;
     --gold: #ffd600;
     --silver: #aab0c0;
     --bronze: #cd7f32;
@@ -1339,9 +1339,11 @@ function bootApp() {
   // Header
   const av = document.getElementById('headerAvatar');
   av.textContent = initials(currentUser.name);
-  if (currentUser.isAdmin) av.classList.add('admin');
+  // Explicitly set admin-dependent UI both ways, so logging in as a non-admin
+  // after an admin session does not inherit the previous admin's view.
+  if (currentUser.isAdmin) av.classList.add('admin'); else av.classList.remove('admin');
   document.getElementById('headerName').textContent = currentUser.name + (currentUser.isAdmin ? ' ★' : '');
-  if (isAdmin()) document.getElementById('adminNavTab').style.display = 'block';
+  document.getElementById('adminNavTab').style.display = isAdmin() ? 'block' : 'none';
   showPage('leaderboard');
 }
 
@@ -1917,10 +1919,8 @@ function renderAdminPlayers() {
     return `<div class="player-admin-row">
       <div class="player-admin-name">${p.name}${p.isAdmin ? ' ★' : ''}</div>
       <div class="player-admin-meta">${stats.pts} pts &nbsp;|&nbsp; Joined ${new Date(p.joined).toLocaleDateString('en-GB')}</div>
-      ${!p.isAdmin ? `
-        <button class="btn-warning" onclick="resetPlayer('${key}','${escapeHtml(p.name)}')">Reset</button>
-        <button class="btn-danger" onclick="removePlayer('${key}','${escapeHtml(p.name)}')">Remove</button>
-      ` : ''}
+      <button class="btn-warning" onclick="resetPlayer('${key}','${escapeHtml(p.name)}')">Reset</button>
+      ${!p.isAdmin ? `<button class="btn-danger" onclick="removePlayer('${key}','${escapeHtml(p.name)}')">Remove</button>` : ''}
     </div>`;
   }).join('');
 }

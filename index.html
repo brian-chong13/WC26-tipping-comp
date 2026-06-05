@@ -786,7 +786,7 @@
       <div class="setup-title">FIRST TIME SETUP</div>
       <div class="setup-desc">Paste your JSONBin credentials to get started. You only do this once. Get a free account at <strong>jsonbin.io</strong>.</div>
       <div class="setup-step">STEP 1: Create account at jsonbin.io</div>
-      <div class="setup-step">STEP 2: Create a new bin with content <code style="color:var(--accent);">{}</code></div>
+      <div class="setup-step">STEP 2: Create a new bin with content <code style="color:var(--accent);">{"init": true}</code></div>
       <div class="setup-step">STEP 3: Copy your Master Key and Bin ID below</div>
       <div class="form-group">
         <label class="form-label">JSONBin Master Key (X-Master-Key)</label>
@@ -989,6 +989,15 @@
 
 <script>
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
+// OPTIONAL: paste your JSONBin credentials here ONCE, before sharing the link.
+// When these are filled in, every visitor connects to your competition
+// automatically and goes straight to the sign-in screen (no setup screen).
+// Leave both as empty strings to use the per-browser setup screen instead.
+const EMBEDDED_CONFIG = {
+  masterKey: '$2a$10$x4NZzar5ZhQm/W3FllZ2r..pPgWkdDtfgBwsgzrbaEBpB9WGQVMg2',
+  binId: '6a21906fda38895dfe870b28'       
+};
+
 const ADMIN_NAME_KEY = 'wc2026_admin';
 const CONFIG_KEY = 'wc2026_config';
 const SESSION_KEY = 'wc2026_session';
@@ -1182,6 +1191,11 @@ function isFinalScore(matchId) {
 let _config = null;
 function getConfig() {
   if (_config) return _config;
+  // Embedded credentials take priority: everyone shares them, no setup screen.
+  if (EMBEDDED_CONFIG.masterKey && EMBEDDED_CONFIG.binId) {
+    _config = { masterKey: EMBEDDED_CONFIG.masterKey, binId: EMBEDDED_CONFIG.binId };
+    return _config;
+  }
   const raw = localStorage.getItem(CONFIG_KEY);
   if (raw) { _config = JSON.parse(raw); return _config; }
   return null;
@@ -1300,15 +1314,27 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   try {
     await loadDB();
+    const db = getDB();
     const sess = getSession();
     if (sess) {
       // Validate session still valid
-      const db = getDB();
       if (db.players && db.players[sess.name]) {
         currentUser = sess;
         bootApp();
         return;
       }
+    }
+    // If the bin has no players yet, it needs first-time initialisation
+    // (create the admin). Otherwise go straight to sign in.
+    if (!db.players || Object.keys(db.players).length === 0) {
+      show('loadingScreen', false);
+      // If credentials are embedded, pre-fill them so the admin only sets name + PIN
+      if (EMBEDDED_CONFIG.masterKey && EMBEDDED_CONFIG.binId) {
+        document.getElementById('setupMasterKey').value = EMBEDDED_CONFIG.masterKey;
+        document.getElementById('setupBinId').value = EMBEDDED_CONFIG.binId;
+      }
+      show('setupScreen', true);
+      return;
     }
     show('loadingScreen', false);
     show('authScreen', true);
@@ -1367,17 +1393,31 @@ async function runSetup() {
   document.getElementById('setupBtn').textContent = 'Connecting...';
 
   try {
-    // Test connection
+    // Test connection and read what's already in the bin
     const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
       headers: { 'X-Master-Key': masterKey }
     });
     if (!res.ok) throw new Error('Bad credentials or bin ID');
+    const existing = await res.json();
+    const record = (existing && existing.record) || {};
 
-    // Save config
+    // Save config to this browser
     _config = { masterKey, binId };
     localStorage.setItem(CONFIG_KEY, JSON.stringify(_config));
 
-    // Init DB with admin
+    // If the bin already has players, this is an EXISTING competition.
+    // Do NOT wipe it. Just connect this browser and send them to sign in.
+    if (record.players && Object.keys(record.players).length > 0) {
+      _db = record;
+      show('setupScreen', false);
+      show('authScreen', true);
+      showToast('Connected to your existing competition. Please sign in.', 'success');
+      document.getElementById('setupBtn').disabled = false;
+      document.getElementById('setupBtn').textContent = 'INITIALISE APP';
+      return;
+    }
+
+    // Fresh, empty bin: initialise it with this admin
     const db = { players: {}, predictions: {}, results: {}, teamOverrides: {}, settings: {} };
     const adminKey = normName(adminName);
     db.players[adminKey] = { name: adminName, pin: hashPin(adminPin), isAdmin: true, joined: Date.now() };

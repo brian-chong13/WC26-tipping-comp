@@ -282,6 +282,8 @@
     text-align: center;
   }
   .vs-box.final { color: var(--accent3); background: rgba(255,214,0,0.1); font-size: 14px; font-weight: 600; }
+  .vs-group { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .vs-flag { font-size: 16px; line-height: 1; flex-shrink: 0; }
   .match-meta {
     display: flex;
     align-items: center;
@@ -1130,44 +1132,44 @@ const MATCHES = (() => {
   ];
 
   const ko = [
-    // ROUND OF 32 (16 matches, Jul 4-7)
-    ["KO","Round of 32","Winner A1","Runner-up B2","2026-07-04T18:00:00Z","TBD"],
-    ["KO","Round of 32","Winner B1","Runner-up A2","2026-07-04T21:00:00Z","TBD"],
-    ["KO","Round of 32","Winner C1","Runner-up D2","2026-07-05T00:00:00Z","TBD"],
-    ["KO","Round of 32","Winner D1","Runner-up C2","2026-07-05T18:00:00Z","TBD"],
-    ["KO","Round of 32","Winner E1","Runner-up F2","2026-07-05T21:00:00Z","TBD"],
-    ["KO","Round of 32","Winner F1","Runner-up E2","2026-07-06T00:00:00Z","TBD"],
-    ["KO","Round of 32","Winner G1","Runner-up H2","2026-07-06T18:00:00Z","TBD"],
-    ["KO","Round of 32","Winner H1","Runner-up G2","2026-07-06T21:00:00Z","TBD"],
-    ["KO","Round of 32","Winner I1","Runner-up J2","2026-07-07T00:00:00Z","TBD"],
-    ["KO","Round of 32","Winner J1","Runner-up I2","2026-07-07T18:00:00Z","TBD"],
-    ["KO","Round of 32","Winner K1","Runner-up L2","2026-07-07T21:00:00Z","TBD"],
-    ["KO","Round of 32","Winner L1","Runner-up K2","2026-07-08T00:00:00Z","TBD"],
-    ["KO","Round of 32","3rd Group A/B/C/D","3rd Group E/F/G/H","2026-07-08T18:00:00Z","TBD"],
-    ["KO","Round of 32","3rd Group I/J/K/L","3rd Group (best)","2026-07-08T21:00:00Z","TBD"],
-    ["KO","Round of 32","Best 3rd Group 1","Best 3rd Group 2","2026-07-09T00:00:00Z","TBD"],
-    ["KO","Round of 32","Best 3rd Group 3","Best 3rd Group 4","2026-07-09T18:00:00Z","TBD"],
-    // ROUND OF 16 (8 matches, Jul 10-12)
-    ["KO","Round of 16","R32 Winner 1","R32 Winner 2","2026-07-10T18:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 3","R32 Winner 4","2026-07-10T21:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 5","R32 Winner 6","2026-07-11T00:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 7","R32 Winner 8","2026-07-11T18:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 9","R32 Winner 10","2026-07-11T21:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 11","R32 Winner 12","2026-07-12T00:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 13","R32 Winner 14","2026-07-12T18:00:00Z","TBD"],
-    ["KO","Round of 16","R32 Winner 15","R32 Winner 16","2026-07-12T21:00:00Z","TBD"],
-    // QUARTER-FINALS (4 matches, Jul 14-15)
-    ["KO","Quarter-Final","R16 Winner 1","R16 Winner 2","2026-07-14T18:00:00Z","TBD"],
-    ["KO","Quarter-Final","R16 Winner 3","R16 Winner 4","2026-07-14T21:00:00Z","TBD"],
-    ["KO","Quarter-Final","R16 Winner 5","R16 Winner 6","2026-07-15T18:00:00Z","TBD"],
-    ["KO","Quarter-Final","R16 Winner 7","R16 Winner 8","2026-07-15T21:00:00Z","TBD"],
-    // SEMI-FINALS (2 matches, Jul 17-18)
-    ["KO","Semi-Final","QF Winner 1","QF Winner 2","2026-07-17T21:00:00Z","MetLife Stadium, New York"],
-    ["KO","Semi-Final","QF Winner 3","QF Winner 4","2026-07-18T21:00:00Z","AT&T Stadium, Dallas"],
-    // 3RD PLACE
-    ["KO","3rd Place","SF Loser 1","SF Loser 2","2026-07-18T17:00:00Z","Rose Bowl, Los Angeles"],
-    // FINAL
-    ["KO","Final","SF Winner 1","SF Winner 2","2026-07-19T20:00:00Z","MetLife Stadium, New York"],
+    // ROUND OF 32 (16 matches, 29 Jun - 4 Jul)
+    ["KO","Round of 32","2A","2B","2026-06-28T19:00:00Z","Los Angeles Stadium, Los Angeles"],
+    ["KO","Round of 32","1C","2F","2026-06-29T17:00:00Z","Houston Stadium, Houston"],
+    ["KO","Round of 32","1E","3ABCDF","2026-06-29T20:30:00Z","Boston Stadium, Boston"],
+    ["KO","Round of 32","1F","2C","2026-06-30T01:00:00Z","Monterrey Stadium, Monterrey"],
+    ["KO","Round of 32","2E","2I","2026-06-30T17:00:00Z","Dallas Stadium, Dallas"],
+    ["KO","Round of 32","1I","3CDFGH","2026-06-30T21:00:00Z","New York/New Jersey Stadium, New Jersey"],
+    ["KO","Round of 32","1A","3CEFHI","2026-07-01T01:00:00Z","Mexico City Stadium, Mexico City"],
+    ["KO","Round of 32","1L","3EHIJK","2026-07-01T16:00:00Z","Atlanta Stadium, Atlanta"],
+    ["KO","Round of 32","1G","3AEHIJ","2026-07-01T20:00:00Z","Seattle Stadium, Seattle"],
+    ["KO","Round of 32","1D","3BEFIJ","2026-07-02T00:00:00Z","San Francisco Bay Area Stadium, San Francisco Bay Area"],
+    ["KO","Round of 32","1H","2J","2026-07-02T19:00:00Z","Los Angeles Stadium, Los Angeles"],
+    ["KO","Round of 32","2K","2L","2026-07-02T23:00:00Z","Toronto Stadium, Toronto"],
+    ["KO","Round of 32","1B","3EFGIJ","2026-07-03T03:00:00Z","BC Place Vancouver, Vancouver"],
+    ["KO","Round of 32","2D","2G","2026-07-03T18:00:00Z","Dallas Stadium, Dallas"],
+    ["KO","Round of 32","1J","2H","2026-07-03T22:00:00Z","Miami Stadium, Miami"],
+    ["KO","Round of 32","1K","3DEIJL","2026-07-04T01:30:00Z","Kansas City Stadium, Kansas City"],
+    // ROUND OF 16 (8 matches, 5-8 Jul)
+    ["KO","Round of 16","W73","W75","2026-07-04T17:00:00Z","Houston Stadium, Houston"],
+    ["KO","Round of 16","W74","W77","2026-07-04T21:00:00Z","Philadelphia Stadium, Philadelphia"],
+    ["KO","Round of 16","W76","W78","2026-07-05T20:00:00Z","New York/New Jersey Stadium, New Jersey"],
+    ["KO","Round of 16","W79","W80","2026-07-06T00:00:00Z","Mexico City Stadium, Mexico City"],
+    ["KO","Round of 16","W83","W84","2026-07-06T19:00:00Z","Dallas Stadium, Dallas"],
+    ["KO","Round of 16","W81","W82","2026-07-07T00:00:00Z","Seattle Stadium, Seattle"],
+    ["KO","Round of 16","W86","W88","2026-07-07T16:00:00Z","Atlanta Stadium, Atlanta"],
+    ["KO","Round of 16","W85","W87","2026-07-07T20:00:00Z","BC Place Vancouver, Vancouver"],
+    // QUARTER-FINALS (4 matches, 10-12 Jul)
+    ["KO","Quarter-Final","W89","W90","2026-07-09T20:00:00Z","Boston Stadium, Boston"],
+    ["KO","Quarter-Final","W93","W94","2026-07-10T19:00:00Z","Los Angeles Stadium, Los Angeles"],
+    ["KO","Quarter-Final","W91","W92","2026-07-11T21:00:00Z","Miami Stadium, Miami"],
+    ["KO","Quarter-Final","W95","W96","2026-07-12T01:00:00Z","Kansas City Stadium, Kansas City"],
+    // SEMI-FINALS (2 matches, 15-16 Jul)
+    ["KO","Semi-Final","W97","W98","2026-07-14T19:00:00Z","Dallas Stadium, Dallas"],
+    ["KO","Semi-Final","W99","W100","2026-07-15T19:00:00Z","Atlanta Stadium, Atlanta"],
+    // 3RD PLACE (19 Jul)
+    ["KO","3rd Place","RU101","RU102","2026-07-18T21:00:00Z","Miami Stadium, Miami"],
+    // FINAL (20 Jul)
+    ["KO","Final","W101","W102","2026-07-19T19:00:00Z","New York/New Jersey Stadium, New Jersey"],
   ];
 
   const all = [];
@@ -1228,6 +1230,10 @@ function teamLabel(name) {
   const f = FLAGS[name];
   return f ? `${f} ${escapeHtml(name)}` : escapeHtml(name);
 }
+// Name only (no flag), used when flag is rendered separately in the vs-group
+function teamNameOnly(name) { return escapeHtml(name); }
+// Flag only, empty string for knockout placeholders with no entry in FLAGS
+function teamFlag(name) { return FLAGS[name] || ''; }
 
 // ─── COUNTDOWN (next deadline only) ─────────────────────────────────────────
 // The lock time for a match is 1 hour before kick-off. The countdown tracks the
@@ -1758,9 +1764,13 @@ function renderMatchCard(m, pred, result, showPredInput) {
   return `<div class="match-card ${statusClass}" id="card_${m.id}">
     <div class="match-top">
       <div class="match-teams">
-        <span class="team-name">${teamLabel(m.home)}</span>
-        <div class="vs-box ${result ? 'final' : ''}">${vsContent}</div>
-        <span class="team-name right">${teamLabel(m.away)}</span>
+        <span class="team-name">${teamNameOnly(m.home)}</span>
+        <div class="vs-group">
+          <span class="vs-flag">${teamFlag(m.home)}</span>
+          <div class="vs-box ${result ? 'final' : ''}">${vsContent}</div>
+          <span class="vs-flag">${teamFlag(m.away)}</span>
+        </div>
+        <span class="team-name right">${teamNameOnly(m.away)}</span>
       </div>
     </div>
     <div class="match-meta">
@@ -1842,9 +1852,13 @@ function renderSchedule() {
     html += `<div class="match-card">
       <div class="match-top">
         <div class="match-teams">
-          <span class="team-name">${teamLabel(m.home)}</span>
-          <div class="vs-box ${result?'final':''}">${result ? `${result.home} - ${result.away}` : 'v'}</div>
-          <span class="team-name right">${teamLabel(m.away)}</span>
+          <span class="team-name">${teamNameOnly(m.home)}</span>
+          <div class="vs-group">
+            <span class="vs-flag">${teamFlag(m.home)}</span>
+            <div class="vs-box ${result?'final':''}">${result ? `${result.home} - ${result.away}` : 'v'}</div>
+            <span class="vs-flag">${teamFlag(m.away)}</span>
+          </div>
+          <span class="team-name right">${teamNameOnly(m.away)}</span>
         </div>
       </div>
       <div class="match-meta">
@@ -2047,9 +2061,13 @@ function renderAdminMatches() {
     html += `<div class="match-card" style="margin-bottom:8px;">
       <div class="match-top">
         <div class="match-teams">
-          <span class="team-name">${teamLabel(m.home)}</span>
-          <div class="vs-box ${res?'final':''}">${res ? `${res.home} - ${res.away}` : 'v'}</div>
-          <span class="team-name right">${teamLabel(m.away)}</span>
+          <span class="team-name">${teamNameOnly(m.home)}</span>
+          <div class="vs-group">
+            <span class="vs-flag">${teamFlag(m.home)}</span>
+            <div class="vs-box ${res?'final':''}">${res ? `${res.home} - ${res.away}` : 'v'}</div>
+            <span class="vs-flag">${teamFlag(m.away)}</span>
+          </div>
+          <span class="team-name right">${teamNameOnly(m.away)}</span>
         </div>
       </div>
       <div class="match-meta" style="margin-bottom:4px;">

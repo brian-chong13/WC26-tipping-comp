@@ -769,6 +769,11 @@
   .filter-btn:hover { color: var(--text); }
   .filter-btn.active { background: rgba(0,229,255,0.1); border-color: var(--accent); color: var(--accent); }
 
+  /* DATE/GROUP SORT TOGGLE */
+  .sort-toggle { display: flex; margin-left: auto; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; flex-shrink: 0; }
+  .sort-btn { font-size: 11px; padding: 4px 10px; color: var(--text2); background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all 0.2s; }
+  .sort-btn.active { background: rgba(0,229,255,0.1); color: var(--accent); }
+
   /* PICKS REVEAL */
   .picks-hidden {
     font-size: 11px;
@@ -939,6 +944,10 @@
         <div class="filter-btn" onclick="setPredFilter(this,'open')">Open</div>
         <div class="filter-btn" onclick="setPredFilter(this,'predicted')">Predicted</div>
         <div class="filter-btn" onclick="setPredFilter(this,'locked')">Locked</div>
+        <div class="sort-toggle">
+          <div class="sort-btn active" id="predSortDate" onclick="setPredSort('date')">Date</div>
+          <div class="sort-btn" id="predSortGroup" onclick="setPredSort('group')">Group</div>
+        </div>
       </div>
       <div id="predictionsList"></div>
     </div>
@@ -960,6 +969,10 @@
         <div class="filter-btn" onclick="setSchedFilter(this,'Quarter-Final')">QF</div>
         <div class="filter-btn" onclick="setSchedFilter(this,'Semi-Final')">SF</div>
         <div class="filter-btn" onclick="setSchedFilter(this,'Final')">Final</div>
+        <div class="sort-toggle">
+          <div class="sort-btn active" id="schedSortDate" onclick="setSchedSort('date')">Date</div>
+          <div class="sort-btn" id="schedSortGroup" onclick="setSchedSort('group')">Group</div>
+        </div>
       </div>
       <div id="scheduleList"></div>
     </div>
@@ -1030,7 +1043,7 @@
 // Leave both as empty strings to use the per-browser setup screen instead.
 const EMBEDDED_CONFIG = {
   masterKey: '$2a$10$axydpI4C12TVdjG06fvln.uKHSGdoeYaVM3PzBKR.okeqGpd5d.CW',
-  binId: '6a21906fda38895dfe870b28'  
+  binId: '6a21906fda38895dfe870b28'   
 };
 
 const ADMIN_NAME_KEY = 'wc2026_admin';
@@ -1687,8 +1700,24 @@ function calcPlayerStats(playerKey) {
   return { exact, result, pts, predicted };
 }
 
+// Returns a date header label in AET, e.g. "Thu 12 Jun", "Today, Thu 12 Jun", "Tomorrow, Thu 12 Jun"
+function matchDateLabel(utcStr) {
+  const d = new Date(utcStr);
+  const fmtDate = (dt) => dt.toLocaleDateString('en-GB', { timeZone: 'Australia/Sydney', day: '2-digit', month: '2-digit', year: 'numeric' });
+  const aetDate = fmtDate(d);
+  const now = new Date();
+  const todayAET = fmtDate(now);
+  const tmrwAET = fmtDate(new Date(now.getTime() + 86400000));
+  const dayLabel = d.toLocaleString('en-GB', { timeZone: 'Australia/Sydney', weekday: 'short', day: 'numeric', month: 'short' });
+  if (aetDate === todayAET) return 'Today, ' + dayLabel;
+  if (aetDate === tmrwAET) return 'Tomorrow, ' + dayLabel;
+  return dayLabel;
+}
+
 // ─── PREDICTIONS ─────────────────────────────────────────────────────────────
 let predFilter = 'all';
+let predSort = 'date';
+
 function setPredFilter(el, val) {
   predFilter = val;
   document.querySelectorAll('#predFilterRow .filter-btn').forEach(b => b.classList.remove('active'));
@@ -1696,22 +1725,31 @@ function setPredFilter(el, val) {
   renderPredictions();
 }
 
+function setPredSort(val) {
+  predSort = val;
+  document.getElementById('predSortDate').classList.toggle('active', val === 'date');
+  document.getElementById('predSortGroup').classList.toggle('active', val === 'group');
+  renderPredictions();
+}
+
 function renderPredictions() {
   const db = getDB();
   const myPreds = (db.predictions && db.predictions[currentUser.name]) || {};
-  let matches = MATCHES;
+  let matches = [...MATCHES];
   if (predFilter === 'open') matches = matches.filter(m => !isLocked(m));
   if (predFilter === 'locked') matches = matches.filter(m => isLocked(m));
   if (predFilter === 'predicted') matches = matches.filter(m => myPreds[m.id]);
 
+  if (predSort === 'date') matches.sort((a, b) => new Date(a.utc) - new Date(b.utc));
+
   const container = document.getElementById('predictionsList');
   let html = '';
-  let lastGroup = null;
+  let lastKey = null;
   matches.forEach(m => {
-    const label = m.phase === 'Group Stage' ? `Group ${m.group}` : m.phase;
-    if (label !== lastGroup) {
+    const label = predSort === 'date' ? matchDateLabel(m.utc) : (m.phase === 'Group Stage' ? `Group ${m.group}` : m.phase);
+    if (label !== lastKey) {
       html += `<div class="group-label">${label}</div>`;
-      lastGroup = label;
+      lastKey = label;
     }
     html += renderMatchCard(m, myPreds[m.id], db.results && db.results[m.id], true);
   });
@@ -1827,6 +1865,8 @@ function autoSave(matchId) {
 
 // ─── SCHEDULE ─────────────────────────────────────────────────────────────────
 let schedFilter = 'all';
+let schedSort = 'date';
+
 function setSchedFilter(el, val) {
   schedFilter = val;
   document.querySelectorAll('#schedFilterRow .filter-btn').forEach(b => b.classList.remove('active'));
@@ -1834,16 +1874,25 @@ function setSchedFilter(el, val) {
   renderSchedule();
 }
 
+function setSchedSort(val) {
+  schedSort = val;
+  document.getElementById('schedSortDate').classList.toggle('active', val === 'date');
+  document.getElementById('schedSortGroup').classList.toggle('active', val === 'group');
+  renderSchedule();
+}
+
 function renderSchedule() {
   const db = getDB();
-  let matches = MATCHES;
+  let matches = [...MATCHES];
   if (schedFilter !== 'all') matches = matches.filter(m => m.phase === schedFilter || (schedFilter === 'Final' && (m.phase === 'Final' || m.phase === '3rd Place')));
+
+  if (schedSort === 'date') matches.sort((a, b) => new Date(a.utc) - new Date(b.utc));
 
   const container = document.getElementById('scheduleList');
   let html = '';
   let lastLabel = null;
   matches.forEach(m => {
-    const label = m.phase === 'Group Stage' ? `Group ${m.group}` : m.phase;
+    const label = schedSort === 'date' ? matchDateLabel(m.utc) : (m.phase === 'Group Stage' ? `Group ${m.group}` : m.phase);
     if (label !== lastLabel) { html += `<div class="group-label">${label}</div>`; lastLabel = label; }
     const tz = utcToZones(m.utc);
     const result = db.results && db.results[m.id];
